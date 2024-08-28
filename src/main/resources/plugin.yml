@@ -1,0 +1,4 @@
+name: WorldEvents-Notifications
+version: '${version}'
+main: org.nevermined.worldeventsnotifications.Notifications
+api-version: '1.16'
