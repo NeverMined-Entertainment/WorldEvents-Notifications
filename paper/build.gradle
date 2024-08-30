@@ -6,6 +6,7 @@ plugins {
 dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.6"
+    compileOnly "org.nevermined:WorldEvents-api:1.0.1"
 
     implementation project(":api")
 
@@ -15,7 +16,7 @@ dependencies {
 
     implementation "me.wyne:WUtils-config:2.5.3"
     implementation "me.wyne:WUtils-log:3.0.3"
-    implementation("me.wyne:WUtils-i18n:2.3.7") {
+    implementation("me.wyne:WUtils-i18n:2.3.8") {
         exclude group: "net.kyori"
     }
 }

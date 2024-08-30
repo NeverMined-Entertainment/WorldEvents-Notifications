@@ -1,1 +1,9 @@
 lang: 'ru.yml'
+
+notifications:
+  main:
+    title: '&a<event-name>'
+    subtitle: '&aJust started'
+    chat:
+      - 'Chat, is that real?'
+    sound: 'block.beacon.activate'
