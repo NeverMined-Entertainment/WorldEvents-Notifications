@@ -5,6 +5,11 @@ plugins {
 
 dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+    compileOnly "org.nevermined:WorldEvents-api:1.0.1"
+
+    implementation("me.wyne:WUtils-i18n:2.3.8") {
+        exclude group: "net.kyori"
+    }
 }
 
 def targetJavaVersion = 16

@@ -1,8 +1,9 @@
-name: WorldEvents
+name: WorldEvents-Notifications
 version: '${version}'
 main: org.nevermined.notifications.Notifications
 api-version: '1.16'
 softdepend: [ PlaceholderAPI ]
+depend: [ WorldEvents ]
 author: Wyne
 description: Sends notifications about events
 website: https://github.com/NeverMined-Entertainment/WorldEvents

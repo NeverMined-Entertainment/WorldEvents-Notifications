@@ -1,0 +1,105 @@
+package org.nevermined.notifications.core;
+
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import me.lucko.helper.Events;
+import me.lucko.helper.event.filter.EventFilters;
+import me.wyne.wutils.log.Log;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.nevermined.notifications.Notifications;
+import org.nevermined.notifications.core.data.NotificationData;
+import org.nevermined.notifications.core.data.NotificationFilter;
+import org.nevermined.notifications.core.data.SoundData;
+import org.nevermined.notifications.core.data.TitleData;
+import org.nevermined.worldevents.api.events.WorldEventStart;
+import org.nevermined.worldevents.api.events.WorldEventStop;
+
+import java.util.*;
+
+@Singleton
+public class NotificationManager implements NotificationManagerApi {
+
+    private final Map<String, NotificationApi> notifications = new HashMap<>();
+
+    private final Notifications plugin;
+
+    @Inject
+    public NotificationManager(Notifications plugin)
+    {
+        this.plugin = plugin;
+        registerEvents();
+    }
+
+    private void registerEvents()
+    {
+        Events.subscribe(WorldEventStart.class)
+                .filter(EventFilters.ignoreCancelled())
+                .handler(e -> {
+                    notifications.values().stream()
+                            .filter(notification -> notification.getNotificationData().filter().type().equalsIgnoreCase("start"))
+                            .forEach(notification -> notification.broadcast(e.getWorldEventQueue().getQueueData(), e.getWorldEvent().getEventData()));
+                });
+        Events.subscribe(WorldEventStop.class)
+                .handler(e -> {
+                    notifications.values().stream()
+                            .filter(notification -> notification.getNotificationData().filter().toString().equalsIgnoreCase("stop"))
+                            .forEach(notification -> notification.broadcast(e.getWorldEventQueue().getQueueData(), e.getWorldEvent().getEventData()));
+                });
+    }
+
+    private void loadNotifications(FileConfiguration config)
+    {
+        for (String notificationKey : config.getConfigurationSection("notifications").getKeys(false))
+        {
+            ConfigurationSection notificationSection = config.getConfigurationSection("notifications." + notificationKey);
+            ConfigurationSection titleSection = notificationSection.getConfigurationSection("title");
+            ConfigurationSection soundSection = notificationSection.getConfigurationSection("sound");
+            notifications.put(notificationKey, new Notification(new NotificationData(
+                    notificationKey,
+                    titleSection != null ? new TitleData(
+                            titleSection.getString("title"),
+                            titleSection.getString("subtitle"),
+                            titleSection.contains("fadein")
+                                ? titleSection.getInt("fadein")
+                                : 500,
+                            titleSection.contains("stay")
+                                ? titleSection.getInt("stay")
+                                : 3500,
+                            titleSection.contains("fadeout")
+                                ? titleSection.getInt("fadeout")
+                                : 1000
+                    ) : null,
+                    notificationSection.getStringList("chat"),
+                    soundSection != null ? new SoundData(
+                            soundSection.getString("key"),
+                            soundSection.contains("volume")
+                                ? (float) soundSection.getDouble("volume")
+                                : 1.0f,
+                            soundSection.contains("pitch")
+                                ? (float) soundSection.getDouble("pitch")
+                                : 1.0f
+                    ) : null,
+                    new NotificationFilter(
+                            notificationSection.contains("type")
+                                ? notificationSection.getString("type")
+                                : "start",
+                            notificationSection.getStringList("whitelist"),
+                            notificationSection.getStringList("blacklist"),
+                            notificationSection.getStringList("permissions"),
+                            notificationSection.getStringList("players")
+                    )
+            )));
+        }
+    }
+
+    @Override
+    public void reloadNotifications() {
+        loadNotifications(plugin.getConfig());
+    }
+
+    @Override
+    public Map<String, NotificationApi> getNotifications() {
+        return notifications;
+    }
+}
