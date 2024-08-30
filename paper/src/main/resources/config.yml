@@ -2,8 +2,14 @@ lang: 'ru.yml'
 
 notifications:
   main:
-    title: '&a<event-name>'
-    subtitle: '&aJust started'
+    title:
+      title: '&a<event-name>'
+      subtitle: '&aJust started'
     chat:
-      - 'Chat, is that real?'
-    sound: 'block.beacon.activate'
+      - '&aChat, is that real?'
+      - '&aDid %worldevents_event_<queue-key>_current_name% just started?'
+    sound:
+      key: 'block.beacon.activate'
+      volume: 1.0
+      pitch: 0.5
+    type: 'start'

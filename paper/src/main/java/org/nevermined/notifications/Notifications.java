@@ -8,6 +8,8 @@ import me.wyne.wutils.i18n.language.validation.EmptyValidator;
 import me.wyne.wutils.log.BasicLogConfig;
 import me.wyne.wutils.log.ConfigurableLogConfig;
 import me.wyne.wutils.log.Log;
+import org.nevermined.notifications.core.NotificationManagerApi;
+import org.nevermined.notifications.core.modules.NotificationManagerModule;
 import org.nevermined.notifications.modules.PluginModule;
 
 import java.io.File;
@@ -15,6 +17,10 @@ import java.util.concurrent.Executors;
 
 @Singleton
 public final class Notifications extends ExtendedJavaPlugin {
+
+    private Injector injector;
+
+    private NotificationManagerApi notificationManager;
 
     @Override
     protected void enable() {
@@ -24,8 +30,9 @@ public final class Notifications extends ExtendedJavaPlugin {
         initializeI18n();
 
         try {
-            Injector injector = Guice.createInjector(
-                    new PluginModule(this)
+            injector = Guice.createInjector(
+                    new PluginModule(this),
+                    new NotificationManagerModule()
             );
         } catch (CreationException e)
         {
@@ -33,6 +40,14 @@ public final class Notifications extends ExtendedJavaPlugin {
         }
 
         initializeConfig();
+
+        try {
+            notificationManager = injector.getInstance(NotificationManagerApi.class);
+            notificationManager.reloadNotifications();
+        } catch (ConfigurationException | ProvisionException e)
+        {
+            Log.global.exception("Guice configuration/provision exception", e);
+        }
     }
 
     private void initializeLogger()

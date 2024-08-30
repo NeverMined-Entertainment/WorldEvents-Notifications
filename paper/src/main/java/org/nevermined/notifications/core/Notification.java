@@ -3,13 +3,12 @@ package org.nevermined.notifications.core;
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
 import me.wyne.wutils.i18n.language.replacement.TextReplacement;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
+import org.nevermined.notifications.core.data.NotificationData;
 import org.nevermined.worldevents.api.core.EventData;
 import org.nevermined.worldevents.api.core.QueueData;
 
-public class Notification {
+public class Notification implements NotificationApi {
 
     private final NotificationData notificationData;
 
@@ -18,6 +17,7 @@ public class Notification {
         this.notificationData = notificationData;
     }
 
+    @Override
     public void broadcast(QueueData queue, EventData event)
     {
         if (!notificationData.filter().isValid(queue.key()))
@@ -40,17 +40,17 @@ public class Notification {
 
         for (Player player : notificationData.filter().getRecieverList())
         {
-            Component title = I18n.global.getLegacyPlaceholderComponent(player.locale(), player, notificationData.title(), replacements);
-            Component subtitle = I18n.global.getLegacyPlaceholderComponent(player.locale(), player, notificationData.subtitle(), replacements);
-            Component chat = notificationData.chat().stream()
-                    .map(s -> I18n.global.getLegacyPlaceholderComponent(player.locale(), player, s, replacements))
-                    .reduce(I18n::reduceComponent).orElse(Component.empty());
-            Title showTitle = Title.title(title, subtitle);
-
-            player.showTitle(showTitle);
-            player.sendMessage(chat);
-            player.playSound(notificationData.sound());
+            if (notificationData.titleData() != null)
+                player.showTitle(notificationData.titleData().buildTitle(player, replacements));
+            if (!notificationData.chat().isEmpty())
+                player.sendMessage(notificationData.buildChat(player, replacements));
+            if (notificationData.soundData() != null)
+                player.playSound(notificationData.soundData().sound());
         }
     }
 
+    @Override
+    public NotificationData getNotificationData() {
+        return notificationData;
+    }
 }

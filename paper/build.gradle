@@ -21,6 +21,18 @@ dependencies {
     }
 }
 
+shadowJar {
+    archiveBaseName.set("WorldEvents-Notifications")
+    archiveClassifier.set("")
+    def outputDir = project.hasProperty('shadowJarOutputDir') ? project.shadowJarOutputDir : "${buildDir}/libs"
+    destinationDirectory = file(outputDir)
+    minimize()
+    relocate "me.lucko.helper", "org.nevermined.worldevents.shadow.lucko.helper"
+    relocate "com.google.inject", "org.nevermined.worldevents.shadow.google.guice"
+    relocate "com.google.common", "org.nevermined.worldevents.shadow.google.common"
+    relocate "me.wyne.wutils", "org.nevermined.worldevents.shadow.wutils"
+}
+
 def targetJavaVersion = 16
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
