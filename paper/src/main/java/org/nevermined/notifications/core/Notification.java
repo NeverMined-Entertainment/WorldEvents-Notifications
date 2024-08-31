@@ -18,6 +18,24 @@ public class Notification implements NotificationApi {
     }
 
     @Override
+    public void broadcast() {
+        for (Player player : notificationData.filter().getReceiverList())
+        {
+            broadcast(player);
+        }
+    }
+
+    @Override
+    public void broadcast(Player player) {
+        if (notificationData.titleData() != null)
+            player.showTitle(notificationData.titleData().buildTitle(player));
+        if (!notificationData.chat().isEmpty())
+            player.sendMessage(notificationData.buildChat(player));
+        if (notificationData.soundData() != null)
+            player.playSound(notificationData.soundData().sound());
+    }
+
+    @Override
     public void broadcast(QueueData queue, EventData event)
     {
         if (!notificationData.filter().isValid(queue.key()))
@@ -38,7 +56,7 @@ public class Notification implements NotificationApi {
                 Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
         };
 
-        for (Player player : notificationData.filter().getRecieverList())
+        for (Player player : notificationData.filter().getReceiverList())
         {
             if (notificationData.titleData() != null)
                 player.showTitle(notificationData.titleData().buildTitle(player, replacements));
@@ -47,6 +65,34 @@ public class Notification implements NotificationApi {
             if (notificationData.soundData() != null)
                 player.playSound(notificationData.soundData().sound());
         }
+    }
+
+    @Override
+    public void broadcast(Player player, QueueData queue, EventData event) {
+        if (!notificationData.filter().isValid(queue.key()))
+            return;
+        if (!notificationData.filter().isValid(event.key()))
+            return;
+
+        TextReplacement[] replacements = {
+                Placeholder.replace("queue-key", queue.key()),
+                Placeholder.legacy("queue-name", queue.name()),
+                Placeholder.legacy("queue-description", I18n.reduceComponent(queue.description())),
+                Placeholder.replace("queue-capacity", String.valueOf(queue.capacity())),
+                Placeholder.replace("event-key", event.key()),
+                Placeholder.legacy("event-name", event.name()),
+                Placeholder.legacy("event-description", I18n.reduceComponent(event.description())),
+                Placeholder.replace("event-chance", String.valueOf(event.chancePercent())),
+                Placeholder.replace("event-duration", String.valueOf(event.durationSeconds())),
+                Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
+        };
+
+        if (notificationData.titleData() != null)
+            player.showTitle(notificationData.titleData().buildTitle(player, replacements));
+        if (!notificationData.chat().isEmpty())
+            player.sendMessage(notificationData.buildChat(player, replacements));
+        if (notificationData.soundData() != null)
+            player.playSound(notificationData.soundData().sound());
     }
 
     @Override

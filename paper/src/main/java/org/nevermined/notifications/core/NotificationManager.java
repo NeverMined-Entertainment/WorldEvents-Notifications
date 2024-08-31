@@ -4,14 +4,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import me.lucko.helper.Events;
 import me.lucko.helper.event.filter.EventFilters;
-import me.wyne.wutils.log.Log;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.nevermined.notifications.Notifications;
 import org.nevermined.notifications.core.data.NotificationData;
 import org.nevermined.notifications.core.data.NotificationFilter;
 import org.nevermined.notifications.core.data.SoundData;
 import org.nevermined.notifications.core.data.TitleData;
+import org.nevermined.worldevents.api.core.EventData;
+import org.nevermined.worldevents.api.core.QueueData;
 import org.nevermined.worldevents.api.events.WorldEventStart;
 import org.nevermined.worldevents.api.events.WorldEventStop;
 
@@ -31,6 +33,26 @@ public class NotificationManager implements NotificationManagerApi {
         registerEvents();
     }
 
+    @Override
+    public void broadcast(String notificationKey) {
+        notifications.get(notificationKey).broadcast();
+    }
+
+    @Override
+    public void broadcast(String notificationKey, Player player) {
+        notifications.get(notificationKey).broadcast(player);
+    }
+
+    @Override
+    public void broadcast(String notificationKey, QueueData queue, EventData event) {
+        notifications.get(notificationKey).broadcast(queue, event);
+    }
+
+    @Override
+    public void broadcast(String notificationKey, Player player, QueueData queue, EventData event) {
+        notifications.get(notificationKey).broadcast(player, queue, event);
+    }
+
     private void registerEvents()
     {
         Events.subscribe(WorldEventStart.class)
@@ -43,7 +65,7 @@ public class NotificationManager implements NotificationManagerApi {
         Events.subscribe(WorldEventStop.class)
                 .handler(e -> {
                     notifications.values().stream()
-                            .filter(notification -> notification.getNotificationData().filter().toString().equalsIgnoreCase("stop"))
+                            .filter(notification -> notification.getNotificationData().filter().type().equalsIgnoreCase("stop"))
                             .forEach(notification -> notification.broadcast(e.getWorldEventQueue().getQueueData(), e.getWorldEvent().getEventData()));
                 });
     }

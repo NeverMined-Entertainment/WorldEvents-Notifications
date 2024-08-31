@@ -7,6 +7,7 @@ dependencies {
     compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.6"
     compileOnly "org.nevermined:WorldEvents-api:1.0.1"
+    implementation "dev.jorel:commandapi-bukkit-shade:9.4.1"
 
     implementation project(":api")
 
@@ -30,6 +31,7 @@ shadowJar {
     relocate "me.lucko.helper", "org.nevermined.worldevents.shadow.lucko.helper"
     relocate "com.google.inject", "org.nevermined.worldevents.shadow.google.guice"
     relocate "com.google.common", "org.nevermined.worldevents.shadow.google.common"
+    relocate "dev.jorel.commandapi", "org.nevermined.worldevents.shadow.commandapi"
     relocate "me.wyne.wutils", "org.nevermined.worldevents.shadow.wutils"
 }
 
