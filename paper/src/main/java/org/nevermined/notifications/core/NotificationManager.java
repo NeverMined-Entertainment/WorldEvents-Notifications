@@ -65,7 +65,7 @@ public class NotificationManager implements NotificationManagerApi {
         Events.subscribe(WorldEventStop.class)
                 .handler(e -> {
                     notifications.values().stream()
-                            .filter(notification -> notification.getNotificationData().filter().toString().equalsIgnoreCase("stop"))
+                            .filter(notification -> notification.getNotificationData().filter().type().equalsIgnoreCase("stop"))
                             .forEach(notification -> notification.broadcast(e.getWorldEventQueue().getQueueData(), e.getWorldEvent().getEventData()));
                 });
     }

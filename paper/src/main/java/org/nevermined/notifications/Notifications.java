@@ -10,9 +10,11 @@ import me.wyne.wutils.i18n.language.validation.EmptyValidator;
 import me.wyne.wutils.log.BasicLogConfig;
 import me.wyne.wutils.log.ConfigurableLogConfig;
 import me.wyne.wutils.log.Log;
+import org.nevermined.notifications.commands.modules.CommandModule;
 import org.nevermined.notifications.core.NotificationManagerApi;
 import org.nevermined.notifications.core.modules.NotificationManagerModule;
 import org.nevermined.notifications.modules.PluginModule;
+import org.nevermined.worldevents.api.WEApi;
 
 import java.io.File;
 import java.util.concurrent.Executors;
@@ -39,8 +41,10 @@ public final class Notifications extends ExtendedJavaPlugin {
 
         try {
             injector = Guice.createInjector(
+                    Stage.PRODUCTION,
                     new PluginModule(this),
-                    new NotificationManagerModule()
+                    new NotificationManagerModule(),
+                    new CommandModule()
             );
         } catch (CreationException e)
         {

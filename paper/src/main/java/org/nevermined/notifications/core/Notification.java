@@ -19,7 +19,7 @@ public class Notification implements NotificationApi {
 
     @Override
     public void broadcast() {
-        for (Player player : notificationData.filter().getRecieverList())
+        for (Player player : notificationData.filter().getReceiverList())
         {
             broadcast(player);
         }
@@ -56,7 +56,7 @@ public class Notification implements NotificationApi {
                 Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
         };
 
-        for (Player player : notificationData.filter().getRecieverList())
+        for (Player player : notificationData.filter().getReceiverList())
         {
             if (notificationData.titleData() != null)
                 player.showTitle(notificationData.titleData().buildTitle(player, replacements));
