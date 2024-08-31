@@ -1,11 +1,12 @@
 package org.nevermined.notifications.core.data;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public record NotificationFilter(@NotNull String type, @NotNull List<String> whitelist, @NotNull List<String> blacklist, @NotNull List<String> permissions, @NotNull List<String> players) {
 
@@ -18,10 +19,15 @@ public record NotificationFilter(@NotNull String type, @NotNull List<String> whi
 
     public List<Player> getRecieverList()
     {
-        return Bukkit.getOnlinePlayers().stream()
-                .filter(player -> players.isEmpty() || players.stream().anyMatch(playerName -> player.getName().equals(playerName)))
+        ImmutableList<Player> playersSnapshot = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
+        List<Player> recieverList = new ArrayList<>();
+        players.stream()
+                .filter(playerName -> Bukkit.getPlayer(playerName) != null)
+                .forEach(playerName -> recieverList.add(Bukkit.getPlayer(playerName)));
+        playersSnapshot.stream()
                 .filter(player -> permissions.isEmpty() || permissions.stream().anyMatch(player::hasPermission))
-                .collect(Collectors.toUnmodifiableList());
+                .forEach(recieverList::add);
+        return recieverList;
     }
 
 }
