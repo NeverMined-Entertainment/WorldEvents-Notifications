@@ -16,7 +16,7 @@ dependencies {
     implementation "com.google.inject.extensions:guice-assistedinject:7.0.0"
 
     implementation "me.wyne:WUtils-config:2.5.3"
-    implementation "me.wyne:WUtils-log:3.0.3"
+    implementation "me.wyne:WUtils-log:3.0.4"
     implementation("me.wyne:WUtils-i18n:2.3.8") {
         exclude group: "net.kyori"
     }
@@ -28,11 +28,11 @@ shadowJar {
     def outputDir = project.hasProperty('shadowJarOutputDir') ? project.shadowJarOutputDir : "${buildDir}/libs"
     destinationDirectory = file(outputDir)
     minimize()
-    relocate "me.lucko.helper", "org.nevermined.worldevents.shadow.lucko.helper"
-    relocate "com.google.inject", "org.nevermined.worldevents.shadow.google.guice"
-    relocate "com.google.common", "org.nevermined.worldevents.shadow.google.common"
-    relocate "dev.jorel.commandapi", "org.nevermined.worldevents.shadow.commandapi"
-    relocate "me.wyne.wutils", "org.nevermined.worldevents.shadow.wutils"
+    relocate "me.lucko.helper", "org.nevermined.notifications.shadow.lucko.helper"
+    relocate "com.google.inject", "org.nevermined.notifications.shadow.google.guice"
+    relocate "com.google.common", "org.nevermined.notifications.shadow.google.common"
+    relocate "dev.jorel.commandapi", "org.nevermined.notifications.shadow.commandapi"
+    relocate "me.wyne.wutils", "org.nevermined.notifications.shadow.wutils"
 }
 
 def targetJavaVersion = 16

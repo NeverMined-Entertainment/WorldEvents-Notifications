@@ -43,18 +43,7 @@ public class Notification implements NotificationApi {
         if (!notificationData.filter().isValid(event.key()))
             return;
 
-        TextReplacement[] replacements = {
-                Placeholder.replace("queue-key", queue.key()),
-                Placeholder.legacy("queue-name", queue.name()),
-                Placeholder.legacy("queue-description", I18n.reduceComponent(queue.description())),
-                Placeholder.replace("queue-capacity", String.valueOf(queue.capacity())),
-                Placeholder.replace("event-key", event.key()),
-                Placeholder.legacy("event-name", event.name()),
-                Placeholder.legacy("event-description", I18n.reduceComponent(event.description())),
-                Placeholder.replace("event-chance", String.valueOf(event.chancePercent())),
-                Placeholder.replace("event-duration", String.valueOf(event.durationSeconds())),
-                Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
-        };
+        TextReplacement[] replacements = getReplacements(queue, event);
 
         for (Player player : notificationData.filter().getReceiverList())
         {
@@ -74,7 +63,20 @@ public class Notification implements NotificationApi {
         if (!notificationData.filter().isValid(event.key()))
             return;
 
+        TextReplacement[] replacements = getReplacements(queue, event);
+
+        if (notificationData.titleData() != null)
+            player.showTitle(notificationData.titleData().buildTitle(player, replacements));
+        if (!notificationData.chat().isEmpty())
+            player.sendMessage(notificationData.buildChat(player, replacements));
+        if (notificationData.soundData() != null)
+            player.playSound(notificationData.soundData().sound());
+    }
+
+    private TextReplacement[] getReplacements(QueueData queue, EventData event)
+    {
         TextReplacement[] replacements = {
+                Placeholder.replace("notification-key", notificationData.key()),
                 Placeholder.replace("queue-key", queue.key()),
                 Placeholder.legacy("queue-name", queue.name()),
                 Placeholder.legacy("queue-description", I18n.reduceComponent(queue.description())),
@@ -86,13 +88,7 @@ public class Notification implements NotificationApi {
                 Placeholder.replace("event-duration", String.valueOf(event.durationSeconds())),
                 Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
         };
-
-        if (notificationData.titleData() != null)
-            player.showTitle(notificationData.titleData().buildTitle(player, replacements));
-        if (!notificationData.chat().isEmpty())
-            player.sendMessage(notificationData.buildChat(player, replacements));
-        if (notificationData.soundData() != null)
-            player.playSound(notificationData.soundData().sound());
+        return replacements;
     }
 
     @Override
