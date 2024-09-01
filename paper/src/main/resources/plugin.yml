@@ -7,3 +7,6 @@ depend: [ WorldEvents ]
 author: Wyne
 description: Sends notifications about events
 website: https://github.com/NeverMined-Entertainment/WorldEvents
+permissions:
+  wenotif.notificationcontrol:
+    description: 'Allows to check info and broadcast notifications'

@@ -1,5 +1,27 @@
 ### Messages
 
+## Info
+info-notification:
+  - "Ключ: <notification-key>"
+  - "Тайтл: %wenotif_notification_<notification-key>_title%"
+  - " - Саб-Тайтл: %wenotif_notification_<notification-key>_subtitle%"
+  - " - FadeIn: %wenotif_notification_<notification-key>_fadein%"
+  - " - Stay: %wenotif_notification_<notification-key>_stay%"
+  - " - FadeOut: %wenotif_notification_<notification-key>_fadeout%"
+  - "Чат: %wenotif_notification_<notification-key>_chat%"
+  - "Звук: %wenotif_notification_<notification-key>_sound%"
+  - " - Громкость: %wenotif_notification_<notification-key>_volume%"
+  - " - Высота: %wenotif_notification_<notification-key>_pitch%"
+  - "Тип: %wenotif_notification_<notification-key>_type%"
+  - " - Whitelist: %wenotif_notification_<notification-key>_whitelist%"
+  - " - Blacklist: %wenotif_notification_<notification-key>_blacklist%"
+  - " - Игроки: %wenotif_notification_<notification-key>_players%"
+  - " - Права: %wenotif_notification_<notification-key>_permissions%"
+
 ## Success
 success-plugin-reloaded: "&aПлагин перезагружен!"
 success-notifications-reloaded: "&aУведомления перезагружены!"
+
+## Errors
+error-notification-not-found: "&cУведомление <notification-key> не существует!"
+error-event-key-not-found: "&cИвент <event-key> не существует!"

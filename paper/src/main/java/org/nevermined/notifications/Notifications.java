@@ -13,6 +13,7 @@ import me.wyne.wutils.log.Log;
 import org.nevermined.notifications.commands.modules.CommandModule;
 import org.nevermined.notifications.core.NotificationManagerApi;
 import org.nevermined.notifications.core.modules.NotificationManagerModule;
+import org.nevermined.notifications.hooks.modules.HooksModule;
 import org.nevermined.notifications.modules.PluginModule;
 import org.nevermined.worldevents.api.WEApi;
 
@@ -44,6 +45,7 @@ public final class Notifications extends ExtendedJavaPlugin {
                     Stage.PRODUCTION,
                     new PluginModule(this),
                     new NotificationManagerModule(),
+                    new HooksModule(),
                     new CommandModule()
             );
         } catch (CreationException e)
