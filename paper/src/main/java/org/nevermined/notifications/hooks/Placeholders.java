@@ -74,11 +74,19 @@ public class Placeholders extends PlaceholderExpansion {
             // notification_  demo-notification-1  _title
 
             String[] args = params.split("_");
+
+            if (!notificationDataParserMap.containsKey(args[2]))
+            {
+                Log.global.error("Notification placeholder type '" + args[2] + "' not found!");
+                return null;
+            }
+
             try {
                 return notificationDataParserMap.get(args[2]).apply(args[1], null);
             } catch (NullPointerException e)
             {
-                Log.global.exception("Notification placeholder type '" + args[2] + "' not found!", e);
+                Log.global.exception(e);
+                return null;
             }
         }
 

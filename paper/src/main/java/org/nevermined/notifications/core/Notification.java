@@ -75,7 +75,7 @@ public class Notification implements NotificationApi {
 
     private TextReplacement[] getReplacements(QueueData queue, EventData event)
     {
-        TextReplacement[] replacements = {
+        return new TextReplacement[] {
                 Placeholder.replace("notification-key", notificationData.key()),
                 Placeholder.replace("queue-key", queue.key()),
                 Placeholder.legacy("queue-name", queue.name()),
@@ -88,7 +88,6 @@ public class Notification implements NotificationApi {
                 Placeholder.replace("event-duration", String.valueOf(event.durationSeconds())),
                 Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
         };
-        return replacements;
     }
 
     @Override
