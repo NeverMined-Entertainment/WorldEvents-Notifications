@@ -1,5 +1,6 @@
 package org.nevermined.notifications.commands;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dev.jorel.commandapi.CommandAPIBukkit;
@@ -11,6 +12,8 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
+import me.wyne.wutils.log.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.nevermined.notifications.Notifications;
@@ -56,14 +59,11 @@ public class NotificationsCommand {
                                 .replaceSuggestions(ArgumentSuggestions.stringCollection(info -> notificationManager.getNotifications().keySet()))
                                 .then(new MultiLiteralArgument("notificationAction", getNotificationActionsSuggestions())
                                         .executes(this::executeNotificationCommand)
-                                        .then(new PlayerArgument("broadcastTarget")
+                                        .then(new EntitySelectorArgument.ManyPlayers("broadcastTargets").setOptional(true)
                                                 .executes(this::executeNotificationCommand)
-                                                .then(new StringArgument("notificationEvent") // TODO Not working yet
+                                                .then(new StringArgument("notificationEvent").setOptional(true)
                                                         .replaceSuggestions(ArgumentSuggestions.stringCollection(this::getEventKeySuggestions))
-                                                        .executes(this::executeNotificationCommand)))
-                                        .then(new StringArgument("notificationEvent")
-                                                .replaceSuggestions(ArgumentSuggestions.stringCollection(this::getEventKeySuggestions))
-                                                .executes(this::executeNotificationCommand)))))
+                                                        .executes(this::executeNotificationCommand))))))
                 .then(new LiteralArgument("reload")
                         .withPermission(CommandPermission.OP)
                         .executes(((sender, args) -> {
@@ -85,7 +85,7 @@ public class NotificationsCommand {
     {
         Set<String> suggestions = new HashSet<>();
 
-        if (!(info.previousArgs().getOrDefaultRaw("notificationAction", "")).equalsIgnoreCase("broadcast"))
+        if (!((String)info.previousArgs().getOrDefault("notificationAction", "")).equalsIgnoreCase("broadcast"))
             return suggestions;
 
         WorldEventManagerApi worldEventManager = WEApi.getInstance().getWorldEventManager();
@@ -100,8 +100,9 @@ public class NotificationsCommand {
     {
         String key = args.getOrDefaultRaw("notificationKey", "");
         String action = (String) args.getOrDefault("notificationAction", "");
-        Player target = (Player) args.get("broadcastTarget");
+        Collection<Player> targets = (Collection<Player>) args.get("broadcastTargets");
         String eventKey = args.getOrDefaultRaw("notificationEvent", "");
+        ImmutableList<Player> onlinePlayers = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
 
         if (!validateNotificationKey(key))
             throw CommandAPIBukkit.failWithAdventureComponent(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "error-notification-not-found", Placeholder.replace("notification-key", key)));
@@ -125,14 +126,15 @@ public class NotificationsCommand {
                     if (event == null)
                         throw CommandAPIBukkit.failWithAdventureComponent(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "error-event-key-not-found", Placeholder.replace("event-key", eventKey)));
 
-                    if (target != null)
-                        notification.broadcast(target, queue.get().getQueueData(), event.getEventData());
+                    if (targets != null && !targets.containsAll(onlinePlayers))
+                        targets.forEach(target -> notification.broadcast(target, queue.get().getQueueData(), event.getEventData()));
                     else
                         notification.broadcast(queue.get().getQueueData(), event.getEventData());
+                    return;
                 }
 
-                if (target != null)
-                    notification.broadcast(target);
+                if (targets != null && !targets.containsAll(onlinePlayers))
+                    targets.forEach(notification::broadcast);
                 else
                     notification.broadcast();
             }
