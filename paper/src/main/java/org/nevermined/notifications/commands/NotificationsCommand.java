@@ -11,6 +11,7 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.nevermined.notifications.Notifications;
@@ -56,14 +57,11 @@ public class NotificationsCommand {
                                 .replaceSuggestions(ArgumentSuggestions.stringCollection(info -> notificationManager.getNotifications().keySet()))
                                 .then(new MultiLiteralArgument("notificationAction", getNotificationActionsSuggestions())
                                         .executes(this::executeNotificationCommand)
-                                        .then(new PlayerArgument("broadcastTarget")
+                                        .then(new EntitySelectorArgument.ManyPlayers("broadcastTargets").setOptional(true)
                                                 .executes(this::executeNotificationCommand)
-                                                .then(new StringArgument("notificationEvent") // TODO Not working yet
+                                                .then(new StringArgument("notificationEvent").setOptional(true)
                                                         .replaceSuggestions(ArgumentSuggestions.stringCollection(this::getEventKeySuggestions))
-                                                        .executes(this::executeNotificationCommand)))
-                                        .then(new StringArgument("notificationEvent")
-                                                .replaceSuggestions(ArgumentSuggestions.stringCollection(this::getEventKeySuggestions))
-                                                .executes(this::executeNotificationCommand)))))
+                                                        .executes(this::executeNotificationCommand))))))
                 .then(new LiteralArgument("reload")
                         .withPermission(CommandPermission.OP)
                         .executes(((sender, args) -> {
@@ -100,7 +98,7 @@ public class NotificationsCommand {
     {
         String key = args.getOrDefaultRaw("notificationKey", "");
         String action = (String) args.getOrDefault("notificationAction", "");
-        Player target = (Player) args.get("broadcastTarget");
+        Collection<Player> targets = (Collection<Player>) args.get("broadcastTarget");
         String eventKey = args.getOrDefaultRaw("notificationEvent", "");
 
         if (!validateNotificationKey(key))
@@ -125,15 +123,15 @@ public class NotificationsCommand {
                     if (event == null)
                         throw CommandAPIBukkit.failWithAdventureComponent(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "error-event-key-not-found", Placeholder.replace("event-key", eventKey)));
 
-                    if (target != null)
-                        notification.broadcast(target, queue.get().getQueueData(), event.getEventData());
+                    if (targets != null && !targets.containsAll(Bukkit.getOnlinePlayers()))
+                        targets.forEach(target -> notification.broadcast(target, queue.get().getQueueData(), event.getEventData()));
                     else
                         notification.broadcast(queue.get().getQueueData(), event.getEventData());
                     return;
                 }
 
-                if (target != null)
-                    notification.broadcast(target);
+                if (targets != null && !targets.containsAll(Bukkit.getOnlinePlayers()))
+                    targets.forEach(notification::broadcast);
                 else
                     notification.broadcast();
             }
