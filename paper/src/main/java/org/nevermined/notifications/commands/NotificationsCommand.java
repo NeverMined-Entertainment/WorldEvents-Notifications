@@ -85,7 +85,7 @@ public class NotificationsCommand {
     {
         Set<String> suggestions = new HashSet<>();
 
-        if (!(info.previousArgs().getOrDefaultRaw("notificationAction", "")).equalsIgnoreCase("broadcast"))
+        if (!((String)info.previousArgs().getOrDefault("notificationAction", "")).equalsIgnoreCase("broadcast"))
             return suggestions;
 
         WorldEventManagerApi worldEventManager = WEApi.getInstance().getWorldEventManager();
@@ -129,6 +129,7 @@ public class NotificationsCommand {
                         notification.broadcast(target, queue.get().getQueueData(), event.getEventData());
                     else
                         notification.broadcast(queue.get().getQueueData(), event.getEventData());
+                    return;
                 }
 
                 if (target != null)
