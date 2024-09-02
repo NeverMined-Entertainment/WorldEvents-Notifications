@@ -1,5 +1,6 @@
 package org.nevermined.notifications.commands;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import dev.jorel.commandapi.CommandAPIBukkit;
@@ -11,6 +12,7 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
+import me.wyne.wutils.log.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -98,8 +100,9 @@ public class NotificationsCommand {
     {
         String key = args.getOrDefaultRaw("notificationKey", "");
         String action = (String) args.getOrDefault("notificationAction", "");
-        Collection<Player> targets = (Collection<Player>) args.get("broadcastTarget");
+        Collection<Player> targets = (Collection<Player>) args.get("broadcastTargets");
         String eventKey = args.getOrDefaultRaw("notificationEvent", "");
+        ImmutableList<Player> onlinePlayers = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
 
         if (!validateNotificationKey(key))
             throw CommandAPIBukkit.failWithAdventureComponent(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "error-notification-not-found", Placeholder.replace("notification-key", key)));
@@ -123,14 +126,14 @@ public class NotificationsCommand {
                     if (event == null)
                         throw CommandAPIBukkit.failWithAdventureComponent(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "error-event-key-not-found", Placeholder.replace("event-key", eventKey)));
 
-                    if (targets != null && !targets.containsAll(Bukkit.getOnlinePlayers()))
+                    if (targets != null && !targets.containsAll(onlinePlayers))
                         targets.forEach(target -> notification.broadcast(target, queue.get().getQueueData(), event.getEventData()));
                     else
                         notification.broadcast(queue.get().getQueueData(), event.getEventData());
                     return;
                 }
 
-                if (targets != null && !targets.containsAll(Bukkit.getOnlinePlayers()))
+                if (targets != null && !targets.containsAll(onlinePlayers))
                     targets.forEach(notification::broadcast);
                 else
                     notification.broadcast();
