@@ -2,6 +2,7 @@ rootProject.name = 'WorldEvents-Notifications'
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         maven {
             url 'https://jitpack.io'

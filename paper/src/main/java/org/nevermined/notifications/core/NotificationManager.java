@@ -14,8 +14,8 @@ import org.nevermined.notifications.core.data.SoundData;
 import org.nevermined.notifications.core.data.TitleData;
 import org.nevermined.worldevents.api.core.EventData;
 import org.nevermined.worldevents.api.core.QueueData;
-import org.nevermined.worldevents.api.events.WorldEventStart;
-import org.nevermined.worldevents.api.events.WorldEventStop;
+import org.nevermined.worldevents.api.event.WorldEventStart;
+import org.nevermined.worldevents.api.event.WorldEventStop;
 
 import java.util.*;
 
