@@ -12,6 +12,8 @@ import java.util.Set;
 
 public record NotificationFilter(@NotNull String type, @NotNull List<String> whitelist, @NotNull List<String> blacklist, @NotNull List<String> permissions, @NotNull List<String> players) {
 
+    public static final String DEFAULT_TYPE = "start";
+
     public boolean isValid(String key)
     {
         if (whitelist.isEmpty() && blacklist.isEmpty())
@@ -19,7 +21,7 @@ public record NotificationFilter(@NotNull String type, @NotNull List<String> whi
         return whitelist.contains(key);
     }
 
-    public Set<Player> getReceiverList()
+    public Set<Player> getReceiverList() // TODO I'm unsure how it should work
     {
         if (permissions.isEmpty() && players.isEmpty())
             return Set.copyOf(Bukkit.getOnlinePlayers());

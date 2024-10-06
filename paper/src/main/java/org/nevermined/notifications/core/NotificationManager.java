@@ -84,28 +84,28 @@ public class NotificationManager implements NotificationManagerApi {
                             titleSection.getString("subtitle"),
                             titleSection.contains("fadein")
                                 ? titleSection.getInt("fadein")
-                                : 500,
+                                : TitleData.DEFAULT_FADE_IN,
                             titleSection.contains("stay")
                                 ? titleSection.getInt("stay")
-                                : 3500,
+                                : TitleData.DEFAULT_STAY,
                             titleSection.contains("fadeout")
                                 ? titleSection.getInt("fadeout")
-                                : 1000
+                                : TitleData.DEFAULT_FADE_OUT
                     ) : null,
                     notificationSection.getStringList("chat"),
                     soundSection != null ? new SoundData(
                             soundSection.getString("key"),
                             soundSection.contains("volume")
                                 ? (float) soundSection.getDouble("volume")
-                                : 1.0f,
+                                : SoundData.DEFAULT_VOLUME,
                             soundSection.contains("pitch")
                                 ? (float) soundSection.getDouble("pitch")
-                                : 1.0f
+                                : SoundData.DEFAULT_PITCH
                     ) : null,
                     new NotificationFilter(
                             notificationSection.contains("type")
                                 ? notificationSection.getString("type")
-                                : "start",
+                                : NotificationFilter.DEFAULT_TYPE,
                             notificationSection.getStringList("whitelist"),
                             notificationSection.getStringList("blacklist"),
                             notificationSection.getStringList("permissions"),

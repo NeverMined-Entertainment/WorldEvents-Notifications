@@ -12,6 +12,10 @@ import java.time.Duration;
 
 public record TitleData(@NotNull String title, @Nullable String subtitle, int fadeIn, int stay, int fadeOut) {
 
+    public static final int DEFAULT_FADE_IN = 500;
+    public static final int DEFAULT_STAY = 3500;
+    public static final int DEFAULT_FADE_OUT = 1000;
+
     public Title buildTitle(Player player, TextReplacement... replacements)
     {
         Component title = I18n.global.getLegacyPlaceholderComponent(player.locale(), player, title(), replacements);
