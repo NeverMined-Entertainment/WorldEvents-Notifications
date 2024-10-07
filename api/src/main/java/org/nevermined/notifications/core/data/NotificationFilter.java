@@ -10,6 +10,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * @param type When notification is invoked: <br>start - On event start<br>stop - On event stop
+ * @param whitelist Queues and events that will invoke notification
+ * @param blacklist Queues and events that will not invoke notification
+ * @param permissions ALL players with at least one of this permissions will see notification
+ * @param players Players that will see notification
+ */
 public record NotificationFilter(@NotNull String type, @NotNull List<String> whitelist, @NotNull List<String> blacklist, @NotNull List<String> permissions, @NotNull List<String> players) {
 
     public static final String DEFAULT_TYPE = "start";
@@ -21,7 +28,7 @@ public record NotificationFilter(@NotNull String type, @NotNull List<String> whi
         return whitelist.contains(key);
     }
 
-    public Set<Player> getReceiverList() // TODO I'm unsure how it should work
+    public Set<Player> getReceiverList()
     {
         if (permissions.isEmpty() && players.isEmpty())
             return Set.copyOf(Bukkit.getOnlinePlayers());

@@ -55,7 +55,7 @@ public class NotificationsCommand {
                                 sender.sendMessage(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "success-notifications-reloaded"));
                             })))
                         .then(new StringArgument("notificationKey")
-                                .replaceSuggestions(ArgumentSuggestions.stringCollection(info -> notificationManager.getNotifications().keySet())) // TODO Add tooltips
+                                .replaceSuggestions(ArgumentSuggestions.stringCollection(info -> notificationManager.getNotifications().keySet()))
                                 .then(new MultiLiteralArgument("notificationAction", "info", "broadcast")
                                         .executes(this::executeNotificationCommand)
                                         .then(new EntitySelectorArgument.ManyPlayers("broadcastTargets").setOptional(true)
