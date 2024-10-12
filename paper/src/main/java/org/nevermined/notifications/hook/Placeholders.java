@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.nevermined.notifications.Notifications;
-import org.nevermined.notifications.core.NotificationManager;
-import org.nevermined.notifications.core.data.NotificationData;
+import org.nevermined.notifications.api.core.NotificationManager;
+import org.nevermined.notifications.api.core.data.NotificationData;
 
 import java.util.HashMap;
 import java.util.Map;

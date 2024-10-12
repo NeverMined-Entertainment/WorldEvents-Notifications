@@ -1,4 +1,4 @@
-package org.nevermined.notifications.core.data;
+package org.nevermined.notifications.api.core.data;
 
 import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;

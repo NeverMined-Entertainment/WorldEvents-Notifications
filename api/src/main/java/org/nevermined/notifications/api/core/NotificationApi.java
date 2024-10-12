@@ -1,7 +1,7 @@
-package org.nevermined.notifications.core;
+package org.nevermined.notifications.api.core;
 
 import org.bukkit.entity.Player;
-import org.nevermined.notifications.core.data.NotificationData;
+import org.nevermined.notifications.api.core.data.NotificationData;
 import org.nevermined.worldevents.api.core.EventData;
 import org.nevermined.worldevents.api.core.QueueData;
 

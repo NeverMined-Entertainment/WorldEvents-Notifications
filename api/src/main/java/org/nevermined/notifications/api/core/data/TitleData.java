@@ -1,4 +1,4 @@
-package org.nevermined.notifications.core.data;
+package org.nevermined.notifications.api.core.data;
 
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.TextReplacement;

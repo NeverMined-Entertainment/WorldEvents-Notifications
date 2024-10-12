@@ -1,4 +1,4 @@
-package org.nevermined.notifications.core.data;
+package org.nevermined.notifications.api.core.data;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
