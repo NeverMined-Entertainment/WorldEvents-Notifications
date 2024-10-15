@@ -1,4 +1,4 @@
-package org.nevermined.notifications.api.core;
+package org.nevermined.notifications.core;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -8,6 +8,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.nevermined.notifications.Notifications;
+import org.nevermined.notifications.api.core.NotificationApi;
+import org.nevermined.notifications.api.core.NotificationManagerApi;
 import org.nevermined.notifications.api.core.data.NotificationData;
 import org.nevermined.notifications.api.core.data.NotificationFilter;
 import org.nevermined.notifications.api.core.data.SoundData;

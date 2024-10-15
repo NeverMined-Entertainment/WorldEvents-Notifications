@@ -1,12 +1,19 @@
-package org.nevermined.notifications.api.core;
+package org.nevermined.notifications.core;
 
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
 import me.wyne.wutils.i18n.language.replacement.TextReplacement;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+import org.nevermined.notifications.api.core.NotificationApi;
 import org.nevermined.notifications.api.core.data.NotificationData;
+import org.nevermined.notifications.api.core.data.TitleData;
 import org.nevermined.worldevents.api.core.EventData;
 import org.nevermined.worldevents.api.core.QueueData;
+
+import java.time.Duration;
 
 public class Notification implements NotificationApi {
 
@@ -28,9 +35,9 @@ public class Notification implements NotificationApi {
     @Override
     public void broadcast(Player player) {
         if (notificationData.titleData() != null)
-            player.showTitle(notificationData.titleData().buildTitle(player));
+            player.showTitle(buildTitle(notificationData.titleData(), player));
         if (!notificationData.chat().isEmpty())
-            player.sendMessage(notificationData.buildChat(player));
+            player.sendMessage(buildChat(notificationData, player));
         if (notificationData.soundData() != null)
             player.playSound(notificationData.soundData().sound());
     }
@@ -38,9 +45,9 @@ public class Notification implements NotificationApi {
     private void broadcast(Player player, TextReplacement... replacements)
     {
         if (notificationData.titleData() != null)
-            player.showTitle(notificationData.titleData().buildTitle(player, replacements));
+            player.showTitle(buildTitle(notificationData.titleData(), player, replacements));
         if (!notificationData.chat().isEmpty())
-            player.sendMessage(notificationData.buildChat(player, replacements));
+            player.sendMessage(buildChat(notificationData, player, replacements));
         if (notificationData.soundData() != null)
             player.playSound(notificationData.soundData().sound());
     }
@@ -88,6 +95,21 @@ public class Notification implements NotificationApi {
                 Placeholder.replace("event-duration", String.valueOf(event.durationSeconds())),
                 Placeholder.replace("event-cooldown", String.valueOf(event.cooldownSeconds()))
         };
+    }
+
+    private Component buildChat(NotificationData notificationData, @Nullable Player player, TextReplacement... replacements)
+    {
+        return notificationData.chat().stream()
+                .map(s -> I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(player), player, s, replacements))
+                .reduce(I18n::reduceComponent).orElse(Component.empty());
+    }
+
+    private Title buildTitle(TitleData titleData, @Nullable Player player, TextReplacement... replacements)
+    {
+        Component title = I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(player), player, titleData.title(), replacements);
+        Component subtitle = titleData.subtitle() != null ? I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(player), player, titleData.subtitle(), replacements) : Component.empty();
+        Title.Times times = Title.Times.of(Duration.ofMillis(titleData.fadeIn()), Duration.ofMillis(titleData.stay()), Duration.ofMillis(titleData.fadeOut()));
+        return Title.title(title, subtitle, times);
     }
 
     @Override
