@@ -1,7 +1,7 @@
-package org.nevermined.notifications.api.core.modules;
+package org.nevermined.notifications.core.modules;
 
 import com.google.inject.AbstractModule;
-import org.nevermined.notifications.api.core.NotificationManager;
+import org.nevermined.notifications.core.NotificationManager;
 import org.nevermined.notifications.api.core.NotificationManagerApi;
 
 public class NotificationManagerModule extends AbstractModule {

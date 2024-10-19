@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.nevermined.notifications.Notifications;
+import org.nevermined.notifications.api.NotificationsApi;
 
 public class PluginModule extends AbstractModule {
 
@@ -20,6 +21,8 @@ public class PluginModule extends AbstractModule {
                 .toInstance(plugin);
         bind(Notifications.class)
                 .toInstance(plugin);
+        bind(NotificationsApi.class)
+                .to(org.nevermined.notifications.NotificationsApi.class);
         bind(FileConfiguration.class)
                 .toInstance(plugin.getConfig());
     }

@@ -12,7 +12,7 @@ import me.wyne.wutils.log.ConfigurableLogConfig;
 import me.wyne.wutils.log.Log;
 import org.nevermined.notifications.command.module.CommandModule;
 import org.nevermined.notifications.api.core.NotificationManagerApi;
-import org.nevermined.notifications.api.core.modules.NotificationManagerModule;
+import org.nevermined.notifications.core.modules.NotificationManagerModule;
 import org.nevermined.notifications.hook.module.HooksModule;
 import org.nevermined.notifications.module.PluginModule;
 
