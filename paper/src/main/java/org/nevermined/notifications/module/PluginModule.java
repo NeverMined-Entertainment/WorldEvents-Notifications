@@ -1,4 +1,4 @@
-package org.nevermined.notifications.modules;
+package org.nevermined.notifications.module;
 
 import com.google.inject.AbstractModule;
 import org.bukkit.configuration.file.FileConfiguration;

@@ -1,4 +1,4 @@
-package org.nevermined.notifications.core;
+package org.nevermined.notifications.api.core;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -8,14 +8,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.nevermined.notifications.Notifications;
-import org.nevermined.notifications.core.data.NotificationData;
-import org.nevermined.notifications.core.data.NotificationFilter;
-import org.nevermined.notifications.core.data.SoundData;
-import org.nevermined.notifications.core.data.TitleData;
+import org.nevermined.notifications.api.core.data.NotificationData;
+import org.nevermined.notifications.api.core.data.NotificationFilter;
+import org.nevermined.notifications.api.core.data.SoundData;
+import org.nevermined.notifications.api.core.data.TitleData;
 import org.nevermined.worldevents.api.core.EventData;
 import org.nevermined.worldevents.api.core.QueueData;
-import org.nevermined.worldevents.api.events.WorldEventStart;
-import org.nevermined.worldevents.api.events.WorldEventStop;
+import org.nevermined.worldevents.api.event.WorldEventStart;
+import org.nevermined.worldevents.api.event.WorldEventStop;
 
 import java.util.*;
 
@@ -84,28 +84,28 @@ public class NotificationManager implements NotificationManagerApi {
                             titleSection.getString("subtitle"),
                             titleSection.contains("fadein")
                                 ? titleSection.getInt("fadein")
-                                : 500,
+                                : TitleData.DEFAULT_FADE_IN,
                             titleSection.contains("stay")
                                 ? titleSection.getInt("stay")
-                                : 3500,
+                                : TitleData.DEFAULT_STAY,
                             titleSection.contains("fadeout")
                                 ? titleSection.getInt("fadeout")
-                                : 1000
+                                : TitleData.DEFAULT_FADE_OUT
                     ) : null,
                     notificationSection.getStringList("chat"),
                     soundSection != null ? new SoundData(
                             soundSection.getString("key"),
                             soundSection.contains("volume")
                                 ? (float) soundSection.getDouble("volume")
-                                : 1.0f,
+                                : SoundData.DEFAULT_VOLUME,
                             soundSection.contains("pitch")
                                 ? (float) soundSection.getDouble("pitch")
-                                : 1.0f
+                                : SoundData.DEFAULT_PITCH
                     ) : null,
                     new NotificationFilter(
                             notificationSection.contains("type")
                                 ? notificationSection.getString("type")
-                                : "start",
+                                : NotificationFilter.DEFAULT_TYPE,
                             notificationSection.getStringList("whitelist"),
                             notificationSection.getStringList("blacklist"),
                             notificationSection.getStringList("permissions"),

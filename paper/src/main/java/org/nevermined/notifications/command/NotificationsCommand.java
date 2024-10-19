@@ -1,4 +1,4 @@
-package org.nevermined.notifications.commands;
+package org.nevermined.notifications.command;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -12,13 +12,12 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
-import me.wyne.wutils.log.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.nevermined.notifications.Notifications;
-import org.nevermined.notifications.core.NotificationApi;
-import org.nevermined.notifications.core.NotificationManagerApi;
+import org.nevermined.notifications.api.core.NotificationApi;
+import org.nevermined.notifications.api.core.NotificationManagerApi;
 import org.nevermined.worldevents.api.WEApi;
 import org.nevermined.worldevents.api.core.WorldEventManagerApi;
 import org.nevermined.worldevents.api.core.WorldEventQueueApi;
@@ -48,6 +47,7 @@ public class NotificationsCommand {
     {
         new CommandTree("wenotif")
                 .then(new LiteralArgument("notifications")
+                        .withPermission("wenotif.notificationcontrol")
                         .then(new LiteralArgument("reload")
                             .withPermission(CommandPermission.OP)
                             .executes(((sender, args) -> {
@@ -55,9 +55,8 @@ public class NotificationsCommand {
                                 sender.sendMessage(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "success-notifications-reloaded"));
                             })))
                         .then(new StringArgument("notificationKey")
-                                .withPermission("wenotif.notificationcontrol")
                                 .replaceSuggestions(ArgumentSuggestions.stringCollection(info -> notificationManager.getNotifications().keySet()))
-                                .then(new MultiLiteralArgument("notificationAction", getNotificationActionsSuggestions())
+                                .then(new MultiLiteralArgument("notificationAction", "info", "broadcast")
                                         .executes(this::executeNotificationCommand)
                                         .then(new EntitySelectorArgument.ManyPlayers("broadcastTargets").setOptional(true)
                                                 .executes(this::executeNotificationCommand)
@@ -71,14 +70,6 @@ public class NotificationsCommand {
                             sender.sendMessage(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "success-plugin-reloaded"));
                         })))
                 .register();
-    }
-
-    private String[] getNotificationActionsSuggestions()
-    {
-        Set<String> suggestions = new HashSet<>();
-        suggestions.add("info");
-        suggestions.add("broadcast");
-        return suggestions.toArray(String[]::new);
     }
 
     private Collection<String> getEventKeySuggestions(SuggestionInfo<CommandSender> info)
@@ -100,8 +91,8 @@ public class NotificationsCommand {
     {
         String key = args.getOrDefaultRaw("notificationKey", "");
         String action = (String) args.getOrDefault("notificationAction", "");
-        Collection<Player> targets = (Collection<Player>) args.get("broadcastTargets");
-        String eventKey = args.getOrDefaultRaw("notificationEvent", "");
+        Optional<Collection<Player>> targets = args.getOptionalUnchecked("broadcastTargets");
+        Optional<String> eventKeyOptional = args.getOptionalByClass("notificationEvent", String.class);
         ImmutableList<Player> onlinePlayers = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
 
         if (!validateNotificationKey(key))
@@ -114,8 +105,9 @@ public class NotificationsCommand {
                 sender.sendMessage(I18n.reduceComponent(I18n.global.getLegacyPlaceholderComponentList(I18n.toLocale(sender), sender, "info-notification", Placeholder.replace("notification-key", key))));
             }
             case "broadcast" -> {
-                if (!eventKey.isEmpty())
+                if (eventKeyOptional.isPresent())
                 {
+                    String eventKey = eventKeyOptional.get();
                     WorldEventManagerApi worldEventManager = WEApi.getInstance().getWorldEventManager();
                     Optional<WorldEventQueueApi> queue = worldEventManager.getEventQueueMap().values().stream()
                             .filter(streamQueue -> streamQueue.getEventSet().containsKey(eventKey))
@@ -126,15 +118,15 @@ public class NotificationsCommand {
                     if (event == null)
                         throw CommandAPIBukkit.failWithAdventureComponent(I18n.global.getLegacyPlaceholderComponent(I18n.toLocale(sender), sender, "error-event-key-not-found", Placeholder.replace("event-key", eventKey)));
 
-                    if (targets != null && !targets.containsAll(onlinePlayers))
-                        targets.forEach(target -> notification.broadcast(target, queue.get().getQueueData(), event.getEventData()));
+                    if (targets.isPresent() && !targets.get().containsAll(onlinePlayers))
+                        targets.get().forEach(target -> notification.broadcast(target, queue.get().getQueueData(), event.getEventData()));
                     else
                         notification.broadcast(queue.get().getQueueData(), event.getEventData());
                     return;
                 }
 
-                if (targets != null && !targets.containsAll(onlinePlayers))
-                    targets.forEach(notification::broadcast);
+                if (targets.isPresent() && !targets.get().containsAll(onlinePlayers))
+                    targets.get().forEach(notification::broadcast);
                 else
                     notification.broadcast();
             }

@@ -10,12 +10,11 @@ import me.wyne.wutils.i18n.language.validation.EmptyValidator;
 import me.wyne.wutils.log.BasicLogConfig;
 import me.wyne.wutils.log.ConfigurableLogConfig;
 import me.wyne.wutils.log.Log;
-import org.nevermined.notifications.commands.modules.CommandModule;
-import org.nevermined.notifications.core.NotificationManagerApi;
-import org.nevermined.notifications.core.modules.NotificationManagerModule;
-import org.nevermined.notifications.hooks.modules.HooksModule;
-import org.nevermined.notifications.modules.PluginModule;
-import org.nevermined.worldevents.api.WEApi;
+import org.nevermined.notifications.command.module.CommandModule;
+import org.nevermined.notifications.api.core.NotificationManagerApi;
+import org.nevermined.notifications.api.core.modules.NotificationManagerModule;
+import org.nevermined.notifications.hook.module.HooksModule;
+import org.nevermined.notifications.module.PluginModule;
 
 import java.io.File;
 import java.util.concurrent.Executors;
@@ -24,8 +23,6 @@ import java.util.concurrent.Executors;
 public final class Notifications extends ExtendedJavaPlugin {
 
     private Injector injector;
-
-    private NotificationManagerApi notificationManager;
 
     @Override
     protected void load() {
@@ -56,7 +53,7 @@ public final class Notifications extends ExtendedJavaPlugin {
         initializeConfig();
 
         try {
-            notificationManager = injector.getInstance(NotificationManagerApi.class);
+            NotificationManagerApi notificationManager = injector.getInstance(NotificationManagerApi.class);
             notificationManager.reloadNotifications();
         } catch (ConfigurationException | ProvisionException e)
         {

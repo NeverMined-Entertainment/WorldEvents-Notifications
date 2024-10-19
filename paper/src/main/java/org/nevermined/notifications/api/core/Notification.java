@@ -1,10 +1,10 @@
-package org.nevermined.notifications.core;
+package org.nevermined.notifications.api.core;
 
 import me.wyne.wutils.i18n.I18n;
 import me.wyne.wutils.i18n.language.replacement.Placeholder;
 import me.wyne.wutils.i18n.language.replacement.TextReplacement;
 import org.bukkit.entity.Player;
-import org.nevermined.notifications.core.data.NotificationData;
+import org.nevermined.notifications.api.core.data.NotificationData;
 import org.nevermined.worldevents.api.core.EventData;
 import org.nevermined.worldevents.api.core.QueueData;
 
@@ -35,6 +35,16 @@ public class Notification implements NotificationApi {
             player.playSound(notificationData.soundData().sound());
     }
 
+    private void broadcast(Player player, TextReplacement... replacements)
+    {
+        if (notificationData.titleData() != null)
+            player.showTitle(notificationData.titleData().buildTitle(player, replacements));
+        if (!notificationData.chat().isEmpty())
+            player.sendMessage(notificationData.buildChat(player, replacements));
+        if (notificationData.soundData() != null)
+            player.playSound(notificationData.soundData().sound());
+    }
+
     @Override
     public void broadcast(QueueData queue, EventData event)
     {
@@ -47,12 +57,7 @@ public class Notification implements NotificationApi {
 
         for (Player player : notificationData.filter().getReceiverList())
         {
-            if (notificationData.titleData() != null)
-                player.showTitle(notificationData.titleData().buildTitle(player, replacements));
-            if (!notificationData.chat().isEmpty())
-                player.sendMessage(notificationData.buildChat(player, replacements));
-            if (notificationData.soundData() != null)
-                player.playSound(notificationData.soundData().sound());
+            broadcast(player, replacements);
         }
     }
 
@@ -65,12 +70,7 @@ public class Notification implements NotificationApi {
 
         TextReplacement[] replacements = getReplacements(queue, event);
 
-        if (notificationData.titleData() != null)
-            player.showTitle(notificationData.titleData().buildTitle(player, replacements));
-        if (!notificationData.chat().isEmpty())
-            player.sendMessage(notificationData.buildChat(player, replacements));
-        if (notificationData.soundData() != null)
-            player.playSound(notificationData.soundData().sound());
+        broadcast(player, replacements);
     }
 
     private TextReplacement[] getReplacements(QueueData queue, EventData event)

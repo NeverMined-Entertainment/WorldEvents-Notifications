@@ -1,4 +1,4 @@
-package org.nevermined.notifications.hooks;
+package org.nevermined.notifications.hook;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.nevermined.notifications.Notifications;
-import org.nevermined.notifications.core.NotificationManager;
-import org.nevermined.notifications.core.data.NotificationData;
+import org.nevermined.notifications.api.core.NotificationManager;
+import org.nevermined.notifications.api.core.data.NotificationData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,11 +101,19 @@ public class Placeholders extends PlaceholderExpansion {
             // notification_  demo-notification-1  _title
 
             String[] args = params.split("_");
+
+            if (!notificationDataParserMap.containsKey(args[2]))
+            {
+                Log.global.error("Notification placeholder type '" + args[2] + "' not found!");
+                return null;
+            }
+
             try {
                 return notificationDataParserMap.get(args[2]).apply(args[1], player);
             } catch (NullPointerException e)
             {
-                Log.global.exception("Placeholder type '" + args[2] + "' not found!", e);
+                Log.global.exception(e);
+                return null;
             }
         }
 
